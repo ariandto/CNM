@@ -1,0 +1,128 @@
+/* TransaksiKeluar.css */
+
+.transaksi-container {
+    padding: 20px;
+    max-width: 1200px; /* Adjust as needed */
+    margin: 0 auto; /* Center the container */
+}
+
+.welcome-message {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.search-bar-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: left; /* Center the search bar container */
+}
+
+.search-field {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 200px; /* Adjust width as needed */
+}
+
+.date-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+.transaksi-table {
+    width: 100%;
+    max-width: 1200px; /* Adjust as needed */
+    border-collapse: collapse;
+    margin: 20px auto; /* Center the table */
+}
+
+.transaksi-table th, .transaksi-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.transaksi-table th {
+    background-color: #f4f4f4;
+    cursor: pointer;
+    position: relative;
+}
+
+.transaksi-table th.sortable {
+    padding-right: 30px; /* Space for sort icons */
+}
+
+.transaksi-table th.sortable::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+.transaksi-table th.sortable.asc::after {
+    border-bottom: 5px solid #007bff;
+}
+
+.transaksi-table th.sortable.desc::after {
+    border-top: 5px solid #007bff;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0; /* Add margin to the pagination */
+}
+
+.pagination-info {
+    margin: 0 10px;
+}
+
+.pagination-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.pagination-button:hover {
+    background-color: #0056b3;
+}
+
+.pagination-button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: red;
+    text-align: center; /* Center align error messages */
+}
