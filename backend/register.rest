@@ -3,13 +3,36 @@ POST http://localhost:5000/users
 Content-Type: application/json
 
 {
-    "name": "testusersip",
-    "email": "testuser@example.com",
-    "password": "testpassword1",
-    "confPassword": "testpassword1"
+    "name": "oke123",
+    "email": "ajasaja@example.com",
+    "password": "12345678",
+    "confPassword": "12345678"
    
 }
-// name: name,
-                //email: email,
-               // password: password,
-               // confPassword: confPassword
+
+### Test API login
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+
+    "email": "ajasaja@example.com",
+    "password": "12345678"
+   
+}
+### Test API l
+POST http://localhost:5000/transaksi
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsIm5hbWUiOiJva2UxMjMiLCJlbWFpbCI6ImFqYXNhamFAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjE0MDgyMjksImV4cCI6MTcyMTQwODI0NH0.R2gZDr6s9CX2Sl9gEg5oz62C4IAPJVvcF9o5Rjm-n7Q"
+
+{
+    "idtransaksi": "2",
+    "tanggal_pickup": "2024-07-20T14:00:00Z",
+    "nopol": "AB123CD",
+    "driver": "John Doe",
+    "sumber_barang": "Supplier A",
+    "nama_barang": "Product X",
+    "uom": "unit",
+    "qty": 100
+}
+

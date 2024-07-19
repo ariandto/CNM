@@ -94,7 +94,7 @@ const Navbar = () => {
                     <div className="navbar-end">
                         <div className="navbar-item">
                             <div className="buttons">
-                                <button onClick={Logout} className="button is-light">
+                                <button onClick={Logout} className="button is-warning">
                                     Log Out
                                 </button>
                             </div>
