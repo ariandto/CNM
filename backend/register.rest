@@ -1,0 +1,15 @@
+### Test API Register
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "name": "testusersip",
+    "email": "testuser@example.com",
+    "password": "testpassword1",
+    "confPassword": "testpassword1"
+   
+}
+// name: name,
+                //email: email,
+               // password: password,
+               // confPassword: confPassword
