@@ -7,6 +7,7 @@ import { apiurl } from './api/config';
 const Home = () => {
   const [token, setToken] = useState('');
   const [name, setName] = useState('');
+  const [role, setRole] = useState(''); // Initialize role state
   const [expire, setExpire] = useState('');
   const [transaksiMasuk, setTransaksiMasuk] = useState([]);
   const [transaksiKeluar, setTransaksiKeluar] = useState([]);
@@ -17,10 +18,13 @@ const Home = () => {
   const refreshToken = useCallback(async () => {
     try {
       const response = await axios.get(`${apiurl}/token`);
-      setToken(response.data.accessToken);
-      const decoded = jwtDecode(response.data.accessToken);
-      setName(decoded.name); // Set the name from the decoded token
+      const newToken = response.data.accessToken;
+      setToken(newToken);
+      const decoded = jwtDecode(newToken);
+      setName(decoded.name);
+      setRole(decoded.role); // Set the role from the decoded token
       setExpire(decoded.exp);
+      localStorage.setItem('token', newToken);
     } catch (error) {
       console.error('Error refreshing token:', error);
       navigate('/');
@@ -89,7 +93,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Welcome Back: {name} ,</h1>
+      <h1 className="text-2xl font-bold mb-6">Welcome Back: {name}, {role}</h1>
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : error ? (

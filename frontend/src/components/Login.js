@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 import { apiurl } from './api/config';
 
 const Login = () => {
@@ -17,7 +18,6 @@ const Login = () => {
                 password: password
             });
             console.log('Response:', response.data);
-            localStorage.setItem('token', response.data.accessToken);
             navigate("/home");
         } catch (error) {
             if (error.response) {
