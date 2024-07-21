@@ -1,4 +1,6 @@
 const TransaksiKeluar = require('../models/TransaksiKeluar.js');
+const moment = require('moment'); // Menggunakan moment.js untuk format tanggal
+const { Op } = require('sequelize'); // Import Op from Sequelize
 
 const getAllTransaksiKeluar = async (req, res) => {
   try {
@@ -10,20 +12,45 @@ const getAllTransaksiKeluar = async (req, res) => {
   }
 };
 
+const generateNewTransaksiIdKeluar = async () => {
+  try {
+    const today = moment().format('DDMMYY');
+    const prefix = `CMMOUT${today}`;
+
+    const lastTransaksi = await TransaksiKeluar.findOne({
+      where: {
+        idtransaksikeluar: {
+          [Op.like]: `${prefix}%`
+        }
+      },
+      order: [['idtransaksikeluar', 'DESC']]
+    });
+
+    if (!lastTransaksi) {
+      return `${prefix}0001`; // Default ID jika tidak ada data sebelumnya
+    }
+
+    const lastId = lastTransaksi.idtransaksikeluar;
+    const lastNumber = parseInt(lastId.slice(-4));
+    const newNumber = (lastNumber + 1).toString().padStart(4, '0');
+
+    return prefix + newNumber;
+  } catch (error) {
+    console.error("Error generating new transaction ID:", error);
+    throw new Error("Error generating new transaction ID");
+  }
+};
+
 const createTransaksiKeluar = async (req, res) => {
-  const { idtransaksikeluar, tanggal_pickup, nopol, driver, sumber_barang, nama_barang, uom, qty } = req.body;
+  const { tanggal_pickup, nopol, driver, sumber_barang, nama_barang, uom, qty } = req.body;
 
   // Basic validation
-  if (!idtransaksikeluar || !tanggal_pickup || !nopol || !driver || !sumber_barang || !nama_barang || !uom || !qty) {
+  if (!tanggal_pickup || !nopol || !driver || !sumber_barang || !nama_barang || !uom || !qty) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
-    // Check if the provided ID already exists
-    const existingTransaksi = await TransaksiKeluar.findByPk(idtransaksikeluar);
-    if (existingTransaksi) {
-      return res.status(400).json({ message: "Transaction ID already exists" });
-    }
+    const idtransaksikeluar = await generateNewTransaksiIdKeluar();
 
     const newTransaksi = await TransaksiKeluar.create({
       idtransaksikeluar,
@@ -45,8 +72,7 @@ const createTransaksiKeluar = async (req, res) => {
 
 const getLatestTransaksiIdKeluar = async (req, res) => {
   try {
-    const lastTransaksi = await TransaksiKeluar.findOne({ order: [['idtransaksikeluar', 'DESC']] });
-    const newId = lastTransaksi ? lastTransaksi.idtransaksikeluar + 1 : 1;
+    const newId = await generateNewTransaksiIdKeluar();
     res.status(200).json({ idtransaksikeluar: newId });
   } catch (error) {
     console.error("Error fetching latest transaction ID:", error);

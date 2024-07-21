@@ -3,7 +3,7 @@ const db = require('../config/Database.js');
 
 const TransaksiKeluar = db.define('inv_transaksi_keluar', {
   idtransaksikeluar: {
-    type: DataTypes.INTEGER, // Changed to INTEGER for auto-increment
+    type: DataTypes.STRING, // Changed to INTEGER for auto-increment
     primaryKey: true,
     autoIncrement: true // Automatically increment the ID
   },
