@@ -19,18 +19,18 @@ const generateNewTransaksiId = async () => {
 
     const lastTransaksi = await Transaksi.findOne({
       where: {
-        idtransaksi: {
+        idtransaksivarchar: {
           [Op.like]: `${prefix}%`
         }
       },
-      order: [['idtransaksi', 'DESC']]
+      order: [['idtransaksivarchar', 'DESC']]
     });
 
     if (!lastTransaksi) {
       return `${prefix}0001`; // Default ID jika tidak ada data sebelumnya
     }
 
-    const lastId = lastTransaksi.idtransaksi;
+    const lastId = lastTransaksi.idtransaksivarchar;
     const lastNumber = parseInt(lastId.slice(-4));
     const newNumber = (lastNumber + 1).toString().padStart(4, '0');
 
@@ -50,10 +50,11 @@ const createTransaksi = async (req, res) => {
   }
 
   try {
-    const idtransaksi = await generateNewTransaksiId();
+    const idtransaksivarchar = await generateNewTransaksiId();
 
+    // Create transaction with auto-increment for idtransaksi
     const newTransaksi = await Transaksi.create({
-      idtransaksi,
+      idtransaksivarchar,
       tanggal_pickup,
       nopol,
       driver,
@@ -65,15 +66,15 @@ const createTransaksi = async (req, res) => {
 
     res.status(201).json({ message: 'Transaksi Created', transaksi: newTransaksi });
   } catch (error) {
-    console.error("Error creating transaction:", error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error creating transaction:", error.message, error.stack);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
 const getLatestTransaksiId = async (req, res) => {
   try {
     const newId = await generateNewTransaksiId();
-    res.status(200).json({ idtransaksi: newId });
+    res.status(200).json({ idtransaksivarchar: newId });
   } catch (error) {
     console.error("Error fetching latest transaction ID:", error);
     res.status(500).json({ message: "Server Error" });
@@ -82,7 +83,9 @@ const getLatestTransaksiId = async (req, res) => {
 
 const getTransaksiById = async (req, res) => {
   try {
-    const transaksi = await Transaksi.findByPk(req.params.id);
+    const transaksi = await Transaksi.findOne({
+      where: { idtransaksivarchar: req.params.id }
+    });
     if (transaksi) {
       res.status(200).json(transaksi);
     } else {
@@ -112,11 +115,11 @@ const updateTransaksi = async (req, res) => {
       uom,
       qty
     }, {
-      where: { idtransaksi: req.params.id }
+      where: { idtransaksivarchar: req.params.id }
     });
 
     if (updated) {
-      const updatedTransaksi = await Transaksi.findByPk(req.params.id);
+      const updatedTransaksi = await Transaksi.findOne({ where: { idtransaksivarchar: req.params.id } });
       res.status(200).json(updatedTransaksi);
     } else {
       res.status(404).json({ message: 'Transaksi not found' });
@@ -130,7 +133,7 @@ const updateTransaksi = async (req, res) => {
 const deleteTransaksi = async (req, res) => {
   try {
     const deleted = await Transaksi.destroy({
-      where: { idtransaksi: req.params.id }
+      where: { idtransaksivarchar: req.params.id }
     });
 
     if (deleted) {

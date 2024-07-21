@@ -3,9 +3,14 @@ const db = require('../config/Database.js');
 
 const Transaksi = db.define('inv_transaksi_masuk', {
   idtransaksi: {
-    type: DataTypes.STRING, // Menggunakan STRING untuk format custom ID
+    type: DataTypes.INTEGER, 
     primaryKey: true,
   },
+  idtransaksivarchar: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+
   tanggal_pickup: {
     type: DataTypes.DATE,
     allowNull: false,

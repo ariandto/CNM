@@ -82,7 +82,9 @@ const getLatestTransaksiIdKeluar = async (req, res) => {
 
 const getTransaksiKeluarById = async (req, res) => {
   try {
-    const transaksi = await TransaksiKeluar.findByPk(req.params.id);
+    const transaksi = await TransaksiKeluar.findOne({
+      where: { idtransaksikeluar: req.params.id }
+    });
     if (transaksi) {
       res.status(200).json(transaksi);
     } else {
@@ -116,7 +118,7 @@ const updateTransaksiKeluar = async (req, res) => {
     });
 
     if (updated) {
-      const updatedTransaksi = await TransaksiKeluar.findByPk(req.params.id);
+      const updatedTransaksi = await TransaksiKeluar.findOne({ where: { idtransaksikeluar: req.params.id } });
       res.status(200).json(updatedTransaksi);
     } else {
       res.status(404).json({ message: 'Transaksi Keluar not found' });

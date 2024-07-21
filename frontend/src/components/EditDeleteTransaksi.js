@@ -3,11 +3,11 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { apiurl } from './api/config';
-import barangMasukIcon from './images/barangmasuk.png'; 
+import barangMasukIcon from './images/barangmasuk.png';
 
 function EditDeleteTransaksi() {
   const [formData, setFormData] = useState({
-    idtransaksi: '',
+    idtransaksivarchar: '',
     nopol: '',
     driver: '',
     sumber_barang: '',
@@ -23,7 +23,6 @@ function EditDeleteTransaksi() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Function to refresh the token
   const refreshToken = useCallback(async () => {
     try {
       const response = await axios.get(`${apiurl}/token`);
@@ -36,57 +35,85 @@ function EditDeleteTransaksi() {
     }
   }, [navigate]);
 
-  // Set up token refresh interval
   useEffect(() => {
     refreshToken(); // Initial token fetch
 
     const interval = setInterval(() => {
-      refreshToken(); // Refresh token every 5 seconds
-    }, 5000);
+      refreshToken(); // Refresh token every 15 minutes (or adjust as needed)
+    }, 15 * 60 * 1000);
 
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, [refreshToken]);
 
-  // Function to handle fetching the transaction details
   const fetchTransaction = useCallback(async (id) => {
+    if (!id) {
+      setError('Transaction ID is required.');
+      return;
+    }
     try {
       setLoading(true);
+      console.log(`Fetching transaction with ID: ${id}`); // Debug log
       const response = await axios.get(`${apiurl}/transaksi/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setFormData(response.data);
-      setIsEditing(true);
-      setError(null); // Clear previous errors
+      console.log('API Response:', response.data); // Debug log
+      if (response.data && response.data.idtransaksivarchar) {
+        setFormData(response.data);
+        setIsEditing(true);
+        setError(null); // Clear previous errors
+      } else {
+        setError('Transaction not found.');
+        setIsEditing(false);
+        setFormData({
+          idtransaksivarchar: '',
+          nopol: '',
+          driver: '',
+          sumber_barang: '',
+          nama_barang: '',
+          uom: '',
+          qty: ''
+        });
+      }
     } catch (error) {
       console.error('Error fetching transaction details:', error.response ? error.response.data : error.message);
-      setError('Failed to fetch transaction details: ' + (error.response ? error.response.data.message : error.message));
+      setError('Error fetching transaction details: ' + (error.response ? error.response.data.message : error.message));
+      setIsEditing(false);
+      setFormData({
+        idtransaksivarchar: '',
+        nopol: '',
+        driver: '',
+        sumber_barang: '',
+        nama_barang: '',
+        uom: '',
+        qty: ''
+      });
     } finally {
       setLoading(false);
     }
   }, [token]);
 
-  // Function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
 
-  // Function to handle form submission for update
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const { idtransaksi, ...dataToUpdate } = formData;
+    const { idtransaksivarchar, ...dataToUpdate } = formData;
     try {
       setLoading(true);
-      const response = await axios.put(`${apiurl}/transaksi/${idtransaksi}`, dataToUpdate, {
+      console.log(`Updating transaction with ID: ${idtransaksivarchar}`, dataToUpdate); // Debug log
+      const response = await axios.put(`${apiurl}/transaksi/${idtransaksivarchar}`, dataToUpdate, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Update Response:', response.data); // Log the response
       const message = response.data.message || 'Transaction updated successfully!';
+      setError(null); // Clear previous errors
       alert(message);
       setIsEditing(false);
       setTransactionId('');
       setFormData({
-        idtransaksi: '',
+        idtransaksivarchar: '',
         nopol: '',
         driver: '',
         sumber_barang: '',
@@ -96,24 +123,26 @@ function EditDeleteTransaksi() {
       });
     } catch (error) {
       console.error('Error updating transaction:', error.response ? error.response.data : error.message);
-      alert('Failed to update transaction: ' + (error.response ? error.response.data.message : error.message));
+      setError('Failed to update transaction: ' + (error.response ? error.response.data.message : error.message));
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to handle deletion
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
         setLoading(true);
-        const response = await axios.delete(`${apiurl}/transaksi/${formData.idtransaksi}`, {
+        console.log(`Deleting transaction with ID: ${formData.idtransaksivarchar}`); // Debug log
+        const response = await axios.delete(`${apiurl}/transaksi/${formData.idtransaksivarchar}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log('Delete Response:', response.data); // Log the response
         const message = response.data.message || 'Transaction deleted successfully!';
+        setError(null); // Clear previous errors
         alert(message);
         setFormData({
-          idtransaksi: '',
+          idtransaksivarchar: '',
           nopol: '',
           driver: '',
           sumber_barang: '',
@@ -125,14 +154,13 @@ function EditDeleteTransaksi() {
         setTransactionId('');
       } catch (error) {
         console.error('Error deleting transaction:', error.response ? error.response.data : error.message);
-        alert('Failed to delete transaction: ' + (error.response ? error.response.data.message : error.message));
+        setError('Failed to delete transaction: ' + (error.response ? error.response.data.message : error.message));
       } finally {
         setLoading(false);
       }
     }
   };
 
-  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
@@ -144,14 +172,14 @@ function EditDeleteTransaksi() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-    <div className="flex items-center mb-4">
-      <img 
-        src={barangMasukIcon} 
-        alt="Barang Masuk Icon" 
-        className="w-8 h-8 mr-3"  // Adjust width, height, and margin
-      />
-      <h1 className="text-2xl font-semibold">Edit or Delete Transaksi Barang Masuk</h1>
-    </div>
+      <div className="flex items-center mb-4">
+        <img 
+          src={barangMasukIcon} 
+          alt="Barang Masuk Icon" 
+          className="w-8 h-8 mr-3"  // Adjust width, height, and margin
+        />
+        <h1 className="text-2xl font-semibold">Edit or Delete Transaksi Barang Masuk</h1>
+      </div>
       {loading && <p className="text-center">Loading...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -203,7 +231,7 @@ function EditDeleteTransaksi() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Supplier</label>
+              <label className="block text-sm font-medium text-gray-700">Sumber Barang</label>
               <input
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 type="text"
@@ -250,10 +278,11 @@ function EditDeleteTransaksi() {
               />
             </div>
 
-            <div className="flex space-x-2">
+            <div className="flex space-x-4">
               <button
                 type="submit"
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                disabled={loading}
               >
                 Update
               </button>
@@ -261,6 +290,7 @@ function EditDeleteTransaksi() {
                 type="button"
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                 onClick={handleDelete}
+                disabled={loading}
               >
                 Delete
               </button>

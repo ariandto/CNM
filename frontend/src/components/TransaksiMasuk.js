@@ -174,9 +174,9 @@ const TransaksiMasuk = () => {
                                 <tr>
                                     <th 
                                         className="p-3 border border-gray-300 cursor-pointer text-center" 
-                                        onClick={() => requestSort('idtransaksi')}
+                                        onClick={() => requestSort('idtransaksivarchar')}
                                     >
-                                        ID Transaksi {getSortIcon('idtransaksi')}
+                                        ID Transaksi {getSortIcon('idtransaksivarchar')}
                                     </th>
                                     <th 
                                         className="p-3 border border-gray-300 cursor-pointer text-center" 
@@ -225,8 +225,8 @@ const TransaksiMasuk = () => {
                             <tbody>
                                 {currentItems.length > 0 ? (
                                     currentItems.map((item) => (
-                                        <tr key={item.idtransaksi} className="hover:bg-gray-50">
-                                            <td className="p-3 border border-gray-300 truncate max-w-[150px]">{item.idtransaksi}</td>
+                                        <tr key={item.idtransaksivarchar} className="hover:bg-gray-50">
+                                            <td className="p-3 border border-gray-300 truncate max-w-[150px]">{item.idtransaksivarchar}</td>
                                             <td className="p-3 border border-gray-300 truncate max-w-[150px]">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
                                             <td className="p-3 border border-gray-300 truncate max-w-[150px]">{item.nopol}</td>
                                             <td className="p-3 border border-gray-300 truncate max-w-[150px]">{item.driver}</td>
