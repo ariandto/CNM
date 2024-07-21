@@ -48,7 +48,7 @@ function EditDeleteTransaksiKeluar() {
   // Function to handle update request
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const { idtransaksikeluar, ...dataToUpdate } = formData; // Exclude idtransaksi from update
+    const { idtransaksikeluar, ...dataToUpdate } = formData; // Exclude idtransaksikeluar from update
     try {
       setLoading(true);
       const response = await axios.put(`${apiurl}/transaksi-keluar/${idtransaksikeluar}`, dataToUpdate, {
@@ -80,7 +80,7 @@ function EditDeleteTransaksiKeluar() {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
         setLoading(true);
-        const response = await axios.delete(`${apiurl}/transaksi/${formData.idtransaksikeluar}`, {
+        const response = await axios.delete(`${apiurl}/transaksi-keluar/${formData.idtransaksikeluar}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const message = response.data.message || 'Transaction deleted successfully!';
@@ -245,7 +245,7 @@ function EditDeleteTransaksiKeluar() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Qty</label>
+              <label className="block text-sm font-medium text-gray-700">Quantity</label>
               <input
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 type="number"
@@ -256,14 +256,19 @@ function EditDeleteTransaksiKeluar() {
               />
             </div>
 
-            <div className="flex space-x-2 mt-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" type="submit">Update</button>
+            <div className="flex justify-end space-x-2">
               <button
                 type="button"
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                 onClick={handleDelete}
               >
                 Delete
+              </button>
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              >
+                Update
               </button>
             </div>
           </>

@@ -89,8 +89,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Welcome Back: {name}</h1>
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6">Welcome Back: {name} ,</h1>
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : error ? (
@@ -100,12 +99,12 @@ const Home = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
-              <h2 className="text-lg font-semibold">Sumber Barang Masuk</h2>
+              <h2 className="text-lg font-semibold">Supplier of Incoming</h2>
               <p className="text-2xl font-bold mt-2">{countUniqueSourcesMasuk}</p>
               <p className="mt-2">Total Qty: {totalQtyMasuk}</p>
             </div>
             <div className="bg-green-500 text-white p-6 rounded-lg shadow-lg">
-              <h2 className="text-lg font-semibold">Sumber Barang Keluar</h2>
+              <h2 className="text-lg font-semibold">Supplier of Outcoming</h2>
               <p className="text-2xl font-bold mt-2">{countUniqueSourcesKeluar}</p>
               <p className="mt-2">Total Qty: {totalQtyKeluar}</p>
             </div>
@@ -164,6 +163,7 @@ const Home = () => {
               </div>
             </div>
           </div>
+          
         </>
       )}
     </div>

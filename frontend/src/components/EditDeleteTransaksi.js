@@ -256,8 +256,13 @@ function EditDeleteTransaksi() {
               />
             </div>
 
-            <div className="flex space-x-2 mt-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" type="submit">Update</button>
+            <div className="flex justify-between mt-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                Update
+              </button>
               <button
                 type="button"
                 className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"

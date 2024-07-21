@@ -67,7 +67,7 @@ const TransaksiMasuk = () => {
         }
     }, [token, expire, axiosJWT, navigate]);
 
-    const getTransaksi = useCallback(async () => {
+    const getTransaksi = useCallback(async (retryCount = 3) => {
         try {
             const response = await axiosJWT.get(`${apiurl}/transaksi`, {
                 headers: {
@@ -75,13 +75,29 @@ const TransaksiMasuk = () => {
                 }
             });
             setTransaksi(response.data);
+            setError(null); // Clear any previous errors
         } catch (error) {
             console.error('Error fetching transactions:', error);
-            setError('Failed to fetch transactions.');
+            if (retryCount > 0) {
+                console.log(`Retrying... Attempts left: ${retryCount}`);
+                setTimeout(() => getTransaksi(retryCount - 1), 3000); // Retry after 3 seconds
+            } else {
+                setError('Failed to fetch transactions. Please try again later.');
+            }
         } finally {
             setLoading(false);
         }
     }, [token, axiosJWT]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (token) {
+                getTransaksi();
+            }
+        }, 30000); // Cek setiap 30 detik
+
+        return () => clearInterval(interval);
+    }, [token, getTransaksi]);
 
     const filteredTransaksi = transaksi.filter(item => {
         const itemDate = new Date(item.tanggal_pickup).toLocaleDateString();
@@ -128,104 +144,106 @@ const TransaksiMasuk = () => {
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-semibold mb-4">Welcome Back: {name}</h1>
-            <div className="flex items-center mb-4">
+            <div className="flex flex-col md:flex-row items-center mb-4 gap-2">
                 <input 
-                    className="p-2 border rounded-l-lg focus:outline-none"
+                    className="p-2 border rounded-lg focus:outline-none flex-grow"
                     type="text" 
                     placeholder="Search by Nama Barang" 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)} 
                 />
                 <input
-                    className="p-2 border-t border-b focus:outline-none"
+                    className="p-2 border rounded-lg focus:outline-none flex-grow"
                     type="date"
                     value={searchDate}
                     onChange={(e) => setSearchDate(e.target.value)}
                 />
-                <button className="p-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 transition duration-200">
+                <button className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
                     <FiSearch />
                 </button>
             </div>
             {loading ? (
-                <p>Loading...</p>
+                <p className="text-center">Loading...</p>
             ) : error ? (
-                <p>{error}</p>
+                <p className="text-center text-red-500">{error}</p>
             ) : (
                 <>
-                    <table className="min-w-full bg-white border">
-                        <thead>
-                            <tr>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('idtransaksi')}
-                                >
-                                    ID Transaksi {getSortIcon('idtransaksi')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('tanggal_pickup')}
-                                >
-                                    Tanggal Pickup {getSortIcon('tanggal_pickup')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('nopol')}
-                                >
-                                    Nopol {getSortIcon('nopol')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('driver')}
-                                >
-                                    Driver {getSortIcon('driver')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('sumber_barang')}
-                                >
-                                    Supplier {getSortIcon('sumber_barang')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('nama_barang')}
-                                >
-                                    Nama Barang {getSortIcon('nama_barang')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('uom')}
-                                >
-                                    UOM {getSortIcon('uom')}
-                                </th>
-                                <th 
-                                    className="p-2 border-b cursor-pointer" 
-                                    onClick={() => requestSort('qty')}
-                                >
-                                    Qty {getSortIcon('qty')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.length > 0 ? (
-                                currentItems.map((item) => (
-                                    <tr key={item.idtransaksi} className="hover:bg-gray-100">
-                                        <td className="p-2 border-b">{item.idtransaksi}</td>
-                                        <td className="p-2 border-b">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
-                                        <td className="p-2 border-b">{item.nopol}</td>
-                                        <td className="p-2 border-b">{item.driver}</td>
-                                        <td className="p-2 border-b">{item.sumber_barang}</td>
-                                        <td className="p-2 border-b">{item.nama_barang}</td>
-                                        <td className="p-2 border-b">{item.uom}</td>
-                                        <td className="p-2 border-b">{item.qty}</td>
-                                    </tr>
-                                ))
-                            ) : (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                            <thead className="bg-gray-200 text-gray-700">
                                 <tr>
-                                    <td colSpan="8" className="p-2 text-center">No transactions found.</td>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('idtransaksi')}
+                                    >
+                                        ID Transaksi {getSortIcon('idtransaksi')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('tanggal_pickup')}
+                                    >
+                                        Tanggal Pickup {getSortIcon('tanggal_pickup')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('nopol')}
+                                    >
+                                        Nopol {getSortIcon('nopol')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('driver')}
+                                    >
+                                        Driver {getSortIcon('driver')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('sumber_barang')}
+                                    >
+                                        Supplier {getSortIcon('sumber_barang')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('nama_barang')}
+                                    >
+                                        Nama Barang {getSortIcon('nama_barang')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('uom')}
+                                    >
+                                        UOM {getSortIcon('uom')}
+                                    </th>
+                                    <th 
+                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        onClick={() => requestSort('qty')}
+                                    >
+                                        Qty {getSortIcon('qty')}
+                                    </th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {currentItems.length > 0 ? (
+                                    currentItems.map((item) => (
+                                        <tr key={item.idtransaksi} className="hover:bg-gray-50">
+                                            <td className="p-3 border border-gray-300">{item.idtransaksi}</td>
+                                            <td className="p-3 border border-gray-300">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
+                                            <td className="p-3 border border-gray-300">{item.nopol}</td>
+                                            <td className="p-3 border border-gray-300">{item.driver}</td>
+                                            <td className="p-3 border border-gray-300">{item.sumber_barang}</td>
+                                            <td className="p-3 border border-gray-300">{item.nama_barang}</td>
+                                            <td className="p-3 border border-gray-300">{item.uom}</td>
+                                            <td className="p-3 border border-gray-300">{item.qty}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="8" className="p-3 text-center">No transactions found.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                     <div className="flex justify-between items-center mt-4">
                         <div className="text-sm">
                             Page {currentPage} of {Math.ceil(filteredTransaksi.length / itemsPerPage)}
