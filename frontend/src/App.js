@@ -3,7 +3,7 @@ import ListUser from "./components/ListUser.js";
 import Login from "./components/Login.js";
 import Navbar from "./components/Navbar.js";
 import Register from "./components/Register.js";
-import Home from "./components/Home.js";
+import Home from "./components/Home.tsx";
 import TransaksiMasuk from "./components/TransaksiMasuk.js";
 import FormTransaksiMasuk from "./components/FormTransaksiMasuk.js";
 import EditDeleteTransaksi from "./components/EditDeleteTransaksi.js";
