@@ -3,9 +3,8 @@ const db = require('../config/Database.js');
 
 const Transaksi = db.define('inv_transaksi_masuk', {
   idtransaksi: {
-    type: DataTypes.INTEGER, // Changed to INTEGER for auto-increment
+    type: DataTypes.STRING, // Menggunakan STRING untuk format custom ID
     primaryKey: true,
-    autoIncrement: true // Automatically increment the ID
   },
   tanggal_pickup: {
     type: DataTypes.DATE,
