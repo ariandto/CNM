@@ -165,7 +165,7 @@ const TransaksiKeluar = () => {
                                     Driver {getSortIcon('driver')}
                                 </th>
                                 <th className="py-2 border-b" onClick={() => requestSort('sumber_barang')}>
-                                    Sumber Barang {getSortIcon('sumber_barang')}
+                                Supplier {getSortIcon('sumber_barang')}
                                 </th>
                                 <th className="py-2 border-b" onClick={() => requestSort('nama_barang')}>
                                     Nama Barang {getSortIcon('nama_barang')}

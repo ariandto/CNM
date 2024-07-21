@@ -183,7 +183,7 @@ const TransaksiMasuk = () => {
                                     className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('sumber_barang')}
                                 >
-                                    Sumber Barang {getSortIcon('sumber_barang')}
+                                    Supplier {getSortIcon('sumber_barang')}
                                 </th>
                                 <th 
                                     className="p-2 border-b cursor-pointer" 

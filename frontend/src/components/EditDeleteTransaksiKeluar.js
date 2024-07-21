@@ -18,10 +18,14 @@ function EditDeleteTransaksiKeluar() {
   const [expire, setExpire] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Function to fetch transaction details based on ID
   const fetchTransaction = async (id) => {
     try {
+      setLoading(true);
       const response = await axios.get(`${apiurl}/transaksi-keluar/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -29,19 +33,25 @@ function EditDeleteTransaksiKeluar() {
       setIsEditing(true);
     } catch (error) {
       console.error('Error fetching transaction details:', error.response ? error.response.data : error.message);
-      alert('Failed to fetch transaction details: ' + (error.response ? error.response.data.message : error.message));
+      setError('Failed to fetch transaction details: ' + (error.response ? error.response.data.message : error.message));
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Function to handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
 
+  // Function to handle update request
   const handleUpdate = async (e) => {
     e.preventDefault();
+    const { idtransaksikeluar, ...dataToUpdate } = formData; // Exclude idtransaksi from update
     try {
-      const response = await axios.put(`${apiurl}/transaksi-keluar/${formData.idtransaksikeluar}`, formData, {
+      setLoading(true);
+      const response = await axios.put(`${apiurl}/transaksi-keluar/${idtransaksikeluar}`, dataToUpdate, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const message = response.data.message || 'Transaction updated successfully!';
@@ -60,13 +70,17 @@ function EditDeleteTransaksiKeluar() {
     } catch (error) {
       console.error('Error updating transaction:', error.response ? error.response.data : error.message);
       alert('Failed to update transaction: ' + (error.response ? error.response.data.message : error.message));
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Function to handle delete request
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
-        const response = await axios.delete(`${apiurl}/transaksi-keluar/${formData.idtransaksikeluar}`, {
+        setLoading(true);
+        const response = await axios.delete(`${apiurl}/transaksi/${formData.idtransaksikeluar}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const message = response.data.message || 'Transaction deleted successfully!';
@@ -85,10 +99,13 @@ function EditDeleteTransaksiKeluar() {
       } catch (error) {
         console.error('Error deleting transaction:', error.response ? error.response.data : error.message);
         alert('Failed to delete transaction: ' + (error.response ? error.response.data.message : error.message));
+      } finally {
+        setLoading(false);
       }
     }
   };
 
+  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
@@ -98,6 +115,7 @@ function EditDeleteTransaksiKeluar() {
     }
   };
 
+  // Function to refresh token
   const refreshToken = useCallback(async () => {
     try {
       const response = await axios.get(`${apiurl}/token`);
@@ -110,8 +128,8 @@ function EditDeleteTransaksiKeluar() {
     }
   }, [navigate]);
 
+  // Axios JWT interceptor for handling token refresh
   const axiosJWT = axios.create();
-
   axiosJWT.interceptors.request.use(async (config) => {
     const currentDate = new Date();
     if (expire * 1000 < currentDate.getTime()) {
@@ -138,79 +156,119 @@ function EditDeleteTransaksiKeluar() {
   }, [refreshToken]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-8">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Edit/Delete Transaksi Keluar</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="transactionId">
-              Transaction ID
-            </label>
-            <div className="flex space-x-2">
+    <div className="max-w-3xl mx-auto p-4">
+      <h1 className="text-2xl font-semibold mb-4">Edit or Delete Transaksi Barang Keluar</h1>
+      {loading && <p className="text-center">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Transaction ID</label>
+          <div className="flex space-x-2 mt-1">
+            <input
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              type="text"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              placeholder="Enter transaction ID"
+              required
+            />
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              onClick={() => fetchTransaction(transactionId)}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+
+        {isEditing && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nopol</label>
               <input
-                id="transactionId"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 type="text"
-                value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-                placeholder="Enter transaction ID"
+                name="nopol"
+                value={formData.nopol}
+                onChange={handleChange}
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Driver</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="driver"
+                value={formData.driver}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Supplier</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="sumber_barang"
+                value={formData.sumber_barang}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nama Barang</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="nama_barang"
+                value={formData.nama_barang}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">UOM</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="uom"
+                value={formData.uom}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Qty</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="number"
+                name="qty"
+                value={formData.qty}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="flex space-x-2 mt-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" type="submit">Update</button>
               <button
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onClick={() => fetchTransaction(transactionId)}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={handleDelete}
               >
-                Search
+                Delete
               </button>
             </div>
-          </div>
-
-          {isEditing && (
-            <>
-              {[
-                { label: 'Nopol', name: 'nopol', type: 'text' },
-                { label: 'Driver', name: 'driver', type: 'text' },
-                { label: 'Sumber Barang', name: 'sumber_barang', type: 'text' },
-                { label: 'Nama Barang', name: 'nama_barang', type: 'text' },
-                { label: 'UOM', name: 'uom', type: 'text' },
-                { label: 'Qty', name: 'qty', type: 'number' },
-              ].map(({ label, name, type }) => (
-                <div key={name} className="mb-4">
-                  <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor={name}>
-                    {label}
-                  </label>
-                  <input
-                    id={name}
-                    name={name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type={type}
-                    value={formData[name]}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              ))}
-              
-              <div className="flex space-x-4">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  Update
-                </button>
-                <button
-                  type="button"
-                  className="px-6 py-2 bg-red-500 text-white font-semibold rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </>
-          )}
-        </form>
-      </div>
+          </>
+        )}
+      </form>
     </div>
   );
 }

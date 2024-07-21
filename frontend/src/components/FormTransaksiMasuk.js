@@ -163,7 +163,7 @@ function FormTransaksiMasuk() {
         </div>
 
         <div className="flex flex-col">
-          <label className="text-lg">Sumber Barang</label>
+          <label className="text-lg">Supplier</label>
           <input
             className="p-2 border rounded"
             type="text"
