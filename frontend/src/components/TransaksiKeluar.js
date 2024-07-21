@@ -173,49 +173,49 @@ const TransaksiKeluar = () => {
                             <thead className="bg-gray-200 text-gray-700">
                                 <tr>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('idtransaksikeluar')}
                                     >
                                         ID Transaksi {getSortIcon('idtransaksikeluar')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('tanggal_pickup')}
                                     >
                                         Tanggal Pickup {getSortIcon('tanggal_pickup')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('nopol')}
                                     >
                                         Nopol {getSortIcon('nopol')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('driver')}
                                     >
                                         Driver {getSortIcon('driver')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('sumber_barang')}
                                     >
                                         Supplier {getSortIcon('sumber_barang')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('nama_barang')}
                                     >
                                         Nama Barang {getSortIcon('nama_barang')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('uom')}
                                     >
                                         UOM {getSortIcon('uom')}
                                     </th>
                                     <th 
-                                        className="p-3 border border-gray-300 cursor-pointer" 
+                                        className="p-3 border border-gray-300 cursor-pointer text-center"
                                         onClick={() => requestSort('qty')}
                                     >
                                         Qty {getSortIcon('qty')}
@@ -226,14 +226,14 @@ const TransaksiKeluar = () => {
                                 {currentItems.length > 0 ? (
                                     currentItems.map((item) => (
                                         <tr key={item.idtransaksikeluar} className="hover:bg-gray-50">
-                                            <td className="p-3 border border-gray-300">{item.idtransaksikeluar}</td>
-                                            <td className="p-3 border border-gray-300">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
-                                            <td className="p-3 border border-gray-300">{item.nopol}</td>
-                                            <td className="p-3 border border-gray-300">{item.driver}</td>
-                                            <td className="p-3 border border-gray-300">{item.sumber_barang}</td>
-                                            <td className="p-3 border border-gray-300">{item.nama_barang}</td>
-                                            <td className="p-3 border border-gray-300">{item.uom}</td>
-                                            <td className="p-3 border border-gray-300">{item.qty}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.idtransaksikeluar}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.nopol}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.driver}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.sumber_barang}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.nama_barang}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.uom}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.qty}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -264,6 +264,6 @@ const TransaksiKeluar = () => {
             )}
         </div>
     );
-}
+};
 
 export default TransaksiKeluar;

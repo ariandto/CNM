@@ -33,7 +33,7 @@ const Navbar = () => {
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
-                        <a className="flex-shrink-0" href="#">
+                        <a  onClick={() => navigate('/home')}className="flex-shrink-0">
                             <img src="cnm.png" alt="logo" className="h-8 w-auto" />
                         </a>
                         <div className="hidden md:flex space-x-4 ml-10">

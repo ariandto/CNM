@@ -3,6 +3,7 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { apiurl } from './api/config';
+import barangKeluarIcon from './images/barangkeluar.png'; 
 
 function EditDeleteTransaksiKeluar() {
   const [formData, setFormData] = useState({
@@ -22,8 +23,33 @@ function EditDeleteTransaksiKeluar() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Function to fetch transaction details based on ID
-  const fetchTransaction = async (id) => {
+  // Function to refresh the token
+  const refreshToken = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiurl}/token`);
+      setToken(response.data.accessToken);
+      const decoded = jwtDecode(response.data.accessToken);
+      setExpire(decoded.exp);
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      navigate("/"); // Redirect if token refresh fails
+    }
+  }, [navigate]);
+
+  // Set up token refresh interval
+  useEffect(() => {
+    refreshToken(); // Initial token fetch
+
+    const interval = setInterval(() => {
+      refreshToken(); // Refresh token every 5 seconds
+    }, 5000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, [refreshToken]);
+
+  // Function to handle fetching the transaction details
+  const fetchTransaction = useCallback(async (id) => {
     try {
       setLoading(true);
       const response = await axios.get(`${apiurl}/transaksi-keluar/${id}`, {
@@ -31,24 +57,25 @@ function EditDeleteTransaksiKeluar() {
       });
       setFormData(response.data);
       setIsEditing(true);
+      setError(null); // Clear previous errors
     } catch (error) {
       console.error('Error fetching transaction details:', error.response ? error.response.data : error.message);
       setError('Failed to fetch transaction details: ' + (error.response ? error.response.data.message : error.message));
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  // Function to handle form field changes
+  // Function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
 
-  // Function to handle update request
+  // Function to handle form submission for update
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const { idtransaksikeluar, ...dataToUpdate } = formData; // Exclude idtransaksikeluar from update
+    const { idtransaksikeluar, ...dataToUpdate } = formData;
     try {
       setLoading(true);
       const response = await axios.put(`${apiurl}/transaksi-keluar/${idtransaksikeluar}`, dataToUpdate, {
@@ -75,7 +102,7 @@ function EditDeleteTransaksiKeluar() {
     }
   };
 
-  // Function to handle delete request
+  // Function to handle deletion
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
@@ -115,49 +142,16 @@ function EditDeleteTransaksiKeluar() {
     }
   };
 
-  // Function to refresh token
-  const refreshToken = useCallback(async () => {
-    try {
-      const response = await axios.get(`${apiurl}/token`);
-      setToken(response.data.accessToken);
-      const decoded = jwtDecode(response.data.accessToken);
-      setExpire(decoded.exp);
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      navigate("/"); // Redirect if token refresh fails
-    }
-  }, [navigate]);
-
-  // Axios JWT interceptor for handling token refresh
-  const axiosJWT = axios.create();
-  axiosJWT.interceptors.request.use(async (config) => {
-    const currentDate = new Date();
-    if (expire * 1000 < currentDate.getTime()) {
-      try {
-        const response = await axios.get(`${apiurl}/token`);
-        config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-        setToken(response.data.accessToken);
-        const decoded = jwtDecode(response.data.accessToken);
-        setExpire(decoded.exp);
-      } catch (error) {
-        console.error('Error refreshing token in interceptor:', error);
-        navigate("/"); // Redirect if token refresh fails
-      }
-    } else {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  }, (error) => {
-    return Promise.reject(error);
-  });
-
-  useEffect(() => {
-    refreshToken(); // Refresh token on component mount
-  }, [refreshToken]);
-
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-semibold mb-4">Edit or Delete Transaksi Barang Keluar</h1>
+    <div className="flex items-center mb-4">
+      <img 
+        src={barangKeluarIcon} 
+        alt="Barang Keluar Icon" 
+        className="w-8 h-8 mr-3"  // Adjust width, height, and margin
+      />
+      <h1 className="text-2xl font-semibold">Edit or Delete Transaksi Barang Keluar</h1>
+    </div>
       {loading && <p className="text-center">Loading...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -256,19 +250,19 @@ function EditDeleteTransaksiKeluar() {
               />
             </div>
 
-            <div className="flex justify-end space-x-2">
-              <button
-                type="button"
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
+            <div className="flex space-x-2">
               <button
                 type="submit"
                 className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
               >
                 Update
+              </button>
+              <button
+                type="buttonid"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Delete
               </button>
             </div>
           </>
