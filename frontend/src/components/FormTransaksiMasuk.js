@@ -2,9 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-import './FormTransaksiMasuk.css';
-
-const apiurl = 'http://localhost:5000'; 
+import { apiurl } from './api/config';
 
 function FormTransaksiMasuk() {
   const [formData, setFormData] = useState({
@@ -21,7 +19,7 @@ function FormTransaksiMasuk() {
   const navigate = useNavigate();
 
   // Fetch a new ID for transaksi
-  const handleFetchNewId = async () => {
+  const fetchNewId = async () => {
     try {
       const response = await axios.get(`${apiurl}/transaksi/latest-id`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -64,6 +62,7 @@ function FormTransaksiMasuk() {
         uom: '',
         qty: ''
       });
+      fetchNewId(); // Fetch a new ID after successful submission
     } catch (error) {
       console.error('Error creating transaction:', error.response ? error.response.data : error.message);
       alert('Failed to create transaction: ' + (error.response ? error.response.data.message : error.message));
@@ -116,122 +115,103 @@ function FormTransaksiMasuk() {
 
   useEffect(() => {
     refreshToken(); // Refresh token on component mount
-  }, [refreshToken]);
+    if (token) {
+      fetchNewId(); // Fetch new ID when the token is available
+    }
+  }, [refreshToken, token]);
 
   return (
-    <div className="container">
-      <h1 className="title">Form Transaksi Barang Masuk</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label className="label">ID Transaksi</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="idtransaksi"
-              value={formData.idtransaksi}
-              onChange={handleChange}
-              placeholder="Enter transaction ID"
-              required
-            />
-            <button
-              type="button"
-              className="button is-info"
-              onClick={handleFetchNewId}
-            >
-              Fetch New ID
-            </button>
-          </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Form Transaksi Barang Masuk</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex flex-col">
+          <label className="text-lg">ID Transaksi</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="idtransaksi"
+            value={formData.idtransaksi}
+            onChange={handleChange}
+            placeholder="Enter transaction ID"
+            readOnly
+            required
+          />
         </div>
 
-        <div className="field">
-          <label className="label">Nopol</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="nopol"
-              value={formData.nopol}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">Nopol</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="nopol"
+            value={formData.nopol}
+            onChange={handleChange}
+            required
+          />
         </div>
         
-        <div className="field">
-          <label className="label">Driver</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="driver"
-              value={formData.driver}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">Driver</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="driver"
+            value={formData.driver}
+            onChange={handleChange}
+            required
+          />
         </div>
 
-        <div className="field">
-          <label className="label">Sumber Barang</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="sumber_barang"
-              value={formData.sumber_barang}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">Sumber Barang</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="sumber_barang"
+            value={formData.sumber_barang}
+            onChange={handleChange}
+            required
+          />
         </div>
         
-        <div className="field">
-          <label className="label">Nama Barang</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="nama_barang"
-              value={formData.nama_barang}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">Nama Barang</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="nama_barang"
+            value={formData.nama_barang}
+            onChange={handleChange}
+            required
+          />
         </div>
         
-        <div className="field">
-          <label className="label">UOM</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              name="uom"
-              value={formData.uom}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">UOM</label>
+          <input
+            className="p-2 border rounded"
+            type="text"
+            name="uom"
+            value={formData.uom}
+            onChange={handleChange}
+            required
+          />
         </div>
         
-        <div className="field">
-          <label className="label">Qty</label>
-          <div className="control">
-            <input
-              className="input"
-              type="number"
-              name="qty"
-              value={formData.qty}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="flex flex-col">
+          <label className="text-lg">Qty</label>
+          <input
+            className="p-2 border rounded"
+            type="number"
+            name="qty"
+            value={formData.qty}
+            onChange={handleChange}
+            required
+          />
         </div>
 
-        <div className="field">
-          <div className="control">
-            <button className="button is-primary" type="submit">Submit</button>
-          </div>
+        <div className="flex justify-end">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200" type="submit">Submit</button>
         </div>
       </form>
     </div>

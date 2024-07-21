@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import jwtDecode from "jwt-decode";
+import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
-import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa'; // Import sort icons
-import './TransaksiMasuk.css';
-
-const apiurl = 'http://localhost:5000';
+import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { apiurl } from './api/config';
 
 const TransaksiMasuk = () => {
     const [name, setName] = useState('');
@@ -22,6 +20,8 @@ const TransaksiMasuk = () => {
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
+    const axiosJWT = axios.create();
+
     const refreshToken = useCallback(async () => {
         try {
             const response = await axios.get(`${apiurl}/token`);
@@ -29,29 +29,11 @@ const TransaksiMasuk = () => {
             const decoded = jwtDecode(response.data.accessToken);
             setName(decoded.name);
             setExpire(decoded.exp);
-            setLoading(false);
         } catch (error) {
             console.error('Error refreshing token:', error);
-            navigate("/");
+            navigate('/');
         }
     }, [navigate]);
-
-    const getTransaksi = useCallback(async () => {
-        try {
-            const response = await axios.get(`${apiurl}/transaksi`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setTransaksi(response.data);
-            console.log('Transaksi Data:', response.data);
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
-            setError('Failed to fetch transactions.');
-        } finally {
-            setLoading(false);
-        }
-    }, [token]);
 
     useEffect(() => {
         refreshToken();
@@ -59,33 +41,47 @@ const TransaksiMasuk = () => {
 
     useEffect(() => {
         if (token) {
+            axiosJWT.interceptors.request.use(async (config) => {
+                const currentDate = new Date();
+                if (expire * 1000 < currentDate.getTime()) {
+                    try {
+                        const response = await axios.get(`${apiurl}/token`);
+                        config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                        setToken(response.data.accessToken);
+                        const decoded = jwtDecode(response.data.accessToken);
+                        setName(decoded.name);
+                        setExpire(decoded.exp);
+                    } catch (error) {
+                        console.error('Error refreshing token in interceptor:', error);
+                        navigate('/');
+                    }
+                } else {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            }, (error) => {
+                return Promise.reject(error);
+            });
+
             getTransaksi();
         }
-    }, [token, getTransaksi]);
+    }, [token, expire, axiosJWT, navigate]);
 
-    const axiosJWT = axios.create();
-
-    axiosJWT.interceptors.request.use(async (config) => {
-        const currentDate = new Date();
-        if (expire * 1000 < currentDate.getTime()) {
-            try {
-                const response = await axios.get(`${apiurl}/token`);
-                config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-                setToken(response.data.accessToken);
-                const decoded = jwtDecode(response.data.accessToken);
-                setName(decoded.name);
-                setExpire(decoded.exp);
-            } catch (error) {
-                console.error('Error refreshing token in interceptor:', error);
-                navigate("/");
-            }
-        } else {
-            config.headers.Authorization = `Bearer ${token}`;
+    const getTransaksi = useCallback(async () => {
+        try {
+            const response = await axiosJWT.get(`${apiurl}/transaksi`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setTransaksi(response.data);
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+            setError('Failed to fetch transactions.');
+        } finally {
+            setLoading(false);
         }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
+    }, [token, axiosJWT]);
 
     const filteredTransaksi = transaksi.filter(item => {
         const itemDate = new Date(item.tanggal_pickup).toLocaleDateString();
@@ -130,27 +126,25 @@ const TransaksiMasuk = () => {
     };
 
     return (
-        <div className="container">
-            <h1 className="welcome-message">Welcome Back: {name}</h1>
-            <div className="search-bar-container">
-                <div className="search-field">
-                    <input 
-                        className="search-input" 
-                        type="text" 
-                        placeholder="Search by Nama Barang" 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)} 
-                    />
-                    <input
-                        className="date-input"
-                        type="date"
-                        value={searchDate}
-                        onChange={(e) => setSearchDate(e.target.value)}
-                    />
-                    <button className="search-button">
-                        <FiSearch />
-                    </button>
-                </div>
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-semibold mb-4">Welcome Back: {name}</h1>
+            <div className="flex items-center mb-4">
+                <input 
+                    className="p-2 border rounded-l-lg focus:outline-none"
+                    type="text" 
+                    placeholder="Search by Nama Barang" 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                />
+                <input
+                    className="p-2 border-t border-b focus:outline-none"
+                    type="date"
+                    value={searchDate}
+                    onChange={(e) => setSearchDate(e.target.value)}
+                />
+                <button className="p-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 transition duration-200">
+                    <FiSearch />
+                </button>
             </div>
             {loading ? (
                 <p>Loading...</p>
@@ -158,53 +152,53 @@ const TransaksiMasuk = () => {
                 <p>{error}</p>
             ) : (
                 <>
-                    <table className="table">
+                    <table className="min-w-full bg-white border">
                         <thead>
                             <tr>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('idtransaksi')}
                                 >
                                     ID Transaksi {getSortIcon('idtransaksi')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('tanggal_pickup')}
                                 >
                                     Tanggal Pickup {getSortIcon('tanggal_pickup')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('nopol')}
                                 >
                                     Nopol {getSortIcon('nopol')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('driver')}
                                 >
                                     Driver {getSortIcon('driver')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('sumber_barang')}
                                 >
                                     Sumber Barang {getSortIcon('sumber_barang')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('nama_barang')}
                                 >
                                     Nama Barang {getSortIcon('nama_barang')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('uom')}
                                 >
                                     UOM {getSortIcon('uom')}
                                 </th>
                                 <th 
-                                    className="sortable" 
+                                    className="p-2 border-b cursor-pointer" 
                                     onClick={() => requestSort('qty')}
                                 >
                                     Qty {getSortIcon('qty')}
@@ -214,37 +208,39 @@ const TransaksiMasuk = () => {
                         <tbody>
                             {currentItems.length > 0 ? (
                                 currentItems.map((item) => (
-                                    <tr key={item.idtransaksi}>
-                                        <td>{item.idtransaksi}</td>
-                                        <td>{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
-                                        <td>{item.nopol}</td>
-                                        <td>{item.driver}</td>
-                                        <td>{item.sumber_barang}</td>
-                                        <td>{item.nama_barang}</td>
-                                        <td>{item.uom}</td>
-                                        <td>{item.qty}</td>
+                                    <tr key={item.idtransaksi} className="hover:bg-gray-100">
+                                        <td className="p-2 border-b">{item.idtransaksi}</td>
+                                        <td className="p-2 border-b">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
+                                        <td className="p-2 border-b">{item.nopol}</td>
+                                        <td className="p-2 border-b">{item.driver}</td>
+                                        <td className="p-2 border-b">{item.sumber_barang}</td>
+                                        <td className="p-2 border-b">{item.nama_barang}</td>
+                                        <td className="p-2 border-b">{item.uom}</td>
+                                        <td className="p-2 border-b">{item.qty}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8">No transactions found.</td>
+                                    <td colSpan="8" className="p-2 text-center">No transactions found.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
-                    <div className="pagination">
-                        <div className="pagination-info">
+                    <div className="flex justify-between items-center mt-4">
+                        <div className="text-sm">
                             Page {currentPage} of {Math.ceil(filteredTransaksi.length / itemsPerPage)}
                         </div>
-                        {Array.from({ length: Math.ceil(filteredTransaksi.length / itemsPerPage) }, (_, i) => (
-                            <button
-                                key={i + 1}
-                                onClick={() => paginate(i + 1)}
-                                disabled={currentPage === i + 1}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
+                        <div className="flex space-x-1">
+                            {Array.from({ length: Math.ceil(filteredTransaksi.length / itemsPerPage) }, (_, i) => (
+                                <button
+                                    key={i + 1}
+                                    onClick={() => paginate(i + 1)}
+                                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </>
             )}

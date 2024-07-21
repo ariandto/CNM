@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-const  apiurl = 'http://localhost:5000'; 
+import { apiurl } from './api/config';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -12,7 +11,7 @@ const Register = () => {
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
  
-    const Register = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         try {
             await axios.post(`${apiurl}/users`, {
@@ -22,57 +21,83 @@ const Register = () => {
                 confPassword: confPassword
             });
             navigate("/");
-            
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);
             }
         }
-    }
+    };
  
     return (
-        <section className="hero has-background-grey-light is-fullheight is-fullwidth">
-            <div className="hero-body">
-                <div className="container">
-                    <div className="columns is-centered">
-                        <div className="column is-4-desktop">
-                            <form onSubmit={Register} className="box">
-                                <p className="has-text-centered">{msg}</p>
-                                <div className="field mt-5">
-                                    <label className="label">Name</label>
-                                    <div className="controls">
-                                        <input type="text" className="input" placeholder="Name"
-                                            value={name} onChange={(e) => setName(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className="field mt-5">
-                                    <label className="label">Email</label>
-                                    <div className="controls">
-                                        <input type="text" className="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className="field mt-5">
-                                    <label className="label">Password</label>
-                                    <div className="controls">
-                                        <input type="password" className="input" placeholder="******" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className="field mt-5">
-                                    <label className="label">Confirm Password</label>
-                                    <div className="controls">
-                                        <input type="password" className="input" placeholder="******" value={confPassword} onChange={(e) => setConfPassword(e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className="field mt-5">
-                                    <button className="button is-success is-fullwidth">Register</button>
-                                </div>
-                            </form>
-                        </div>
+        <section className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+                <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+                {msg && <p className="text-red-500 text-center mb-4">{msg}</p>}
+                <form onSubmit={handleRegister}>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
+                            Name
+                        </label>
+                        <input
+                            type="text"
+                            id="name"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
                     </div>
-                </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="******"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="confPassword">
+                            Confirm Password
+                        </label>
+                        <input
+                            type="password"
+                            id="confPassword"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="******"
+                            value={confPassword}
+                            onChange={(e) => setConfPassword(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <button
+                            type="submit"
+                            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Register
+                        </button>
+                    </div>
+                </form>
             </div>
         </section>
-    )
-}
- 
-export default Register
+    );
+};
+
+export default Register;

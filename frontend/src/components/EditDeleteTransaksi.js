@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-
-const apiurl = 'http://localhost:5000';
+import { apiurl } from './api/config';
 
 function EditDeleteTransaksi() {
   const [formData, setFormData] = useState({
@@ -139,14 +138,14 @@ function EditDeleteTransaksi() {
   }, [refreshToken]);
 
   return (
-    <div className="container">
-      <h1 className="title">Edit/Delete Transaksi</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label className="label">Transaction ID</label>
-          <div className="control">
+    <div className="max-w-3xl mx-auto p-4">
+      <h1 className="text-2xl font-semibold mb-4">Edit/Delete Transaksi</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Transaction ID</label>
+          <div className="flex space-x-2 mt-1">
             <input
-              className="input"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               type="text"
               value={transactionId}
               onChange={(e) => setTransactionId(e.target.value)}
@@ -155,111 +154,97 @@ function EditDeleteTransaksi() {
             />
             <button
               type="button"
-              className="button is-info"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
               onClick={() => fetchTransaction(transactionId)}
             >
-              Fetch Details
+              Search
             </button>
           </div>
         </div>
 
         {isEditing && (
           <>
-            <div className="field">
-              <label className="label">Nopol</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="nopol"
-                  value={formData.nopol}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Driver</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="driver"
-                  value={formData.driver}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nopol</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="nopol"
+                value={formData.nopol}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <div className="field">
-              <label className="label">Sumber Barang</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="sumber_barang"
-                  value={formData.sumber_barang}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Nama Barang</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="nama_barang"
-                  value={formData.nama_barang}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">UOM</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="uom"
-                  value={formData.uom}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Qty</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="number"
-                  name="qty"
-                  value={formData.qty}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Driver</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="driver"
+                value={formData.driver}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <div className="field">
-              <div className="control">
-                <button className="button is-primary" type="submit">Update</button>
-                <button
-                  type="button"
-                  className="button is-danger"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Sumber Barang</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="sumber_barang"
+                value={formData.sumber_barang}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nama Barang</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="nama_barang"
+                value={formData.nama_barang}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">UOM</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="text"
+                name="uom"
+                value={formData.uom}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Qty</label>
+              <input
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                type="number"
+                name="qty"
+                value={formData.qty}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="flex space-x-2 mt-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" type="submit">Update</button>
+              <button
+                type="button"
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
             </div>
           </>
         )}

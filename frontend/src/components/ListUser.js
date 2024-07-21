@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import jwtDecode from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
-
-const  apiurl = 'http://localhost:5000'; 
+import { apiurl } from './api/config';
 
 const ListUser = () => {
     const [name, setName] = useState('');

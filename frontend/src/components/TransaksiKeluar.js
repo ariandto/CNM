@@ -3,9 +3,7 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import './TransaksiKeluar.css'; // Import the external CSS file
-
-const apiurl = 'http://localhost:5000';
+import { apiurl } from './api/config';
 
 const TransaksiKeluar = () => {
     const [name, setName] = useState('');
@@ -21,7 +19,6 @@ const TransaksiKeluar = () => {
     const itemsPerPage = 10;
     const navigate = useNavigate();
 
-    // Refresh token
     const refreshToken = useCallback(async () => {
         try {
             const response = await axios.get(`${apiurl}/token`);
@@ -36,7 +33,6 @@ const TransaksiKeluar = () => {
         }
     }, [navigate]);
 
-    // Fetch transactions
     const getTransaksi = useCallback(async () => {
         try {
             const response = await axios.get(`${apiurl}/transaksi-keluar`, {
@@ -63,7 +59,6 @@ const TransaksiKeluar = () => {
         }
     }, [token, getTransaksi]);
 
-    // Axios instance with interceptors
     const axiosJWT = axios.create();
 
     axiosJWT.interceptors.request.use(async (config) => {
@@ -88,7 +83,6 @@ const TransaksiKeluar = () => {
         return Promise.reject(error);
     });
 
-    // Filter and sort transactions
     const filteredTransaksi = transaksi.filter(item => {
         const itemDate = new Date(item.tanggal_pickup).toLocaleDateString();
         const formattedSearchDate = new Date(searchDate).toLocaleDateString();
@@ -110,7 +104,6 @@ const TransaksiKeluar = () => {
         return 0;
     });
 
-    // Pagination functionality
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedTransaksi.slice(indexOfFirstItem, indexOfLastItem);
@@ -133,56 +126,54 @@ const TransaksiKeluar = () => {
     };
 
     return (
-        <div className="transaksi-container">
-            <h1 className="welcome-message">Welcome Back: {name}</h1>
-            <div className="search-bar-container">
-                <div className="search-field">
-                    <input 
-                        className="search-input" 
-                        type="text" 
-                        placeholder="Search by Nama Barang" 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)} 
-                    />
-                    <input
-                        className="date-input"
-                        type="date"
-                        value={searchDate}
-                        onChange={(e) => setSearchDate(e.target.value)}
-                    />
-                </div>
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">Welcome Back: {name}</h1>
+            <div className="flex mb-4">
+                <input 
+                    className="border p-2 mr-2 flex-grow" 
+                    type="text" 
+                    placeholder="Search by Nama Barang" 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                />
+                <input
+                    className="border p-2"
+                    type="date"
+                    value={searchDate}
+                    onChange={(e) => setSearchDate(e.target.value)}
+                />
             </div>
             {loading ? (
-                <p>Loading...</p>
+                <p className="text-center">Loading...</p>
             ) : error ? (
-                <p className="error-message">{error}</p>
+                <p className="text-center text-red-500">{error}</p>
             ) : (
                 <>
-                    <table className="transaksi-table">
+                    <table className="min-w-full bg-white border">
                         <thead>
                             <tr>
-                                <th className="sortable" onClick={() => requestSort('idtransaksikeluar')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('idtransaksikeluar')}>
                                     ID Transaksi {getSortIcon('idtransaksikeluar')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('tanggal_pickup')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('tanggal_pickup')}>
                                     Tanggal Pickup {getSortIcon('tanggal_pickup')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('nopol')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('nopol')}>
                                     Nopol {getSortIcon('nopol')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('driver')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('driver')}>
                                     Driver {getSortIcon('driver')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('sumber_barang')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('sumber_barang')}>
                                     Sumber Barang {getSortIcon('sumber_barang')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('nama_barang')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('nama_barang')}>
                                     Nama Barang {getSortIcon('nama_barang')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('uom')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('uom')}>
                                     UOM {getSortIcon('uom')}
                                 </th>
-                                <th className="sortable" onClick={() => requestSort('qty')}>
+                                <th className="py-2 border-b" onClick={() => requestSort('qty')}>
                                     Qty {getSortIcon('qty')}
                                 </th>
                             </tr>
@@ -191,36 +182,36 @@ const TransaksiKeluar = () => {
                             {currentItems.length > 0 ? (
                                 currentItems.map((item) => (
                                     <tr key={item.idtransaksikeluar}>
-                                        <td>{item.idtransaksikeluar}</td>
-                                        <td>{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
-                                        <td>{item.nopol}</td>
-                                        <td>{item.driver}</td>
-                                        <td>{item.sumber_barang}</td>
-                                        <td>{item.nama_barang}</td>
-                                        <td>{item.uom}</td>
-                                        <td>{item.qty}</td>
+                                        <td className="py-2 border-b text-center">{item.idtransaksikeluar}</td>
+                                        <td className="py-2 border-b text-center">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
+                                        <td className="py-2 border-b text-center">{item.nopol}</td>
+                                        <td className="py-2 border-b text-center">{item.driver}</td>
+                                        <td className="py-2 border-b text-center">{item.sumber_barang}</td>
+                                        <td className="py-2 border-b text-center">{item.nama_barang}</td>
+                                        <td className="py-2 border-b text-center">{item.uom}</td>
+                                        <td className="py-2 border-b text-center">{item.qty}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8">No transactions found.</td>
+                                    <td colSpan="8" className="py-2 text-center">No transactions found.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
-                    <div className="pagination">
+                    <div className="flex justify-between items-center mt-4">
                         <button 
-                            className="pagination-button" 
+                            className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
                             onClick={() => paginate(currentPage - 1)} 
                             disabled={currentPage === 1}
                         >
                             Previous
                         </button>
-                        <span className="pagination-info">
+                        <span className="text-gray-700">
                             Page {currentPage} of {Math.ceil(filteredTransaksi.length / itemsPerPage)}
                         </span>
                         <button 
-                            className="pagination-button" 
+                            className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
                             onClick={() => paginate(currentPage + 1)} 
                             disabled={currentPage === Math.ceil(filteredTransaksi.length / itemsPerPage)}
                         >

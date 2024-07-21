@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const apiurl = 'http://localhost:5000';
+import { apiurl } from './api/config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -31,34 +31,38 @@ const Login = () => {
     }
 
     return (
-        <section className="hero has-background-grey-light is-fullheight is-fullwidth">
-            <div className="hero-body">
-                <div className="container">
-                    <div className="columns is-centered">
-                        <div className="column is-4-desktop is-6-tablet is-10-mobile">
-                            <div className="box has-text-centered">
-                                <img src="cnm.png" alt="logo" width="100" height="100" className="mb-5" />
-                                <p className="has-text-centered has-text-danger">{msg}</p>
-                                <form onSubmit={Auth}>
-                                    <div className="field mt-3">
-                                        <label className="label">Email or Username</label>
-                                        <div className="control">
-                                            <input type="text" className="input" placeholder="Username" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="field mt-3">
-                                        <label className="label">Password</label>
-                                        <div className="control">
-                                            <input type="password" className="input" placeholder="******" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="field mt-5">
-                                        <button className="button is-link is-fullwidth">Login</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+        <section className="bg-gray-200 min-h-screen flex items-center justify-center">
+            <div className="w-full max-w-md p-6">
+                <div className="bg-white shadow-md rounded-lg p-8">
+                    <div className="text-center mb-6">
+                        <img src="cnm.png" alt="logo" className="w-24 h-24 mx-auto mb-4" />
+                        <p className="text-red-500">{msg}</p>
                     </div>
+                    <form onSubmit={Auth}>
+                        <div className="mb-4">
+                            <label className="block text-gray-700">Email or Username</label>
+                            <input
+                                type="text"
+                                className="w-full p-3 border rounded-lg mt-2"
+                                placeholder="Username"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-gray-700">Password</label>
+                            <input
+                                type="password"
+                                className="w-full p-3 border rounded-lg mt-2"
+                                placeholder="******"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="mt-6">
+                            <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-200">Login</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>

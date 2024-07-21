@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
-
-const apiurl = 'http://localhost:5000';
+import { apiurl } from './api/config';
 
 function EditDeleteTransaksiKeluar() {
   const [formData, setFormData] = useState({
@@ -139,131 +138,79 @@ function EditDeleteTransaksiKeluar() {
   }, [refreshToken]);
 
   return (
-    <div className="container">
-      <h1 className="title">Edit/Delete Transaksi Keluar</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="field">
-          <label className="label">Transaction ID</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              value={transactionId}
-              onChange={(e) => setTransactionId(e.target.value)}
-              placeholder="Enter transaction ID"
-              required
-            />
-            <button
-              type="button"
-              className="button is-info"
-              onClick={() => fetchTransaction(transactionId)}
-            >
-              Fetch Details
-            </button>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-8">
+        <h1 className="text-2xl font-semibold mb-6 text-center">Edit/Delete Transaksi Keluar</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="transactionId">
+              Transaction ID
+            </label>
+            <div className="flex space-x-2">
+              <input
+                id="transactionId"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={transactionId}
+                onChange={(e) => setTransactionId(e.target.value)}
+                placeholder="Enter transaction ID"
+                required
+              />
+              <button
+                type="button"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onClick={() => fetchTransaction(transactionId)}
+              >
+                Search
+              </button>
+            </div>
           </div>
-        </div>
 
-        {isEditing && (
-          <>
-            <div className="field">
-              <label className="label">Nopol</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="nopol"
-                  value={formData.nopol}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Driver</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="driver"
-                  value={formData.driver}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label className="label">Sumber Barang</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="sumber_barang"
-                  value={formData.sumber_barang}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Nama Barang</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="nama_barang"
-                  value={formData.nama_barang}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">UOM</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="uom"
-                  value={formData.uom}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="field">
-              <label className="label">Qty</label>
-              <div className="control">
-                <input
-                  className="input"
-                  type="number"
-                  name="qty"
-                  value={formData.qty}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <div className="control">
-                <button className="button is-primary" type="submit">Update</button>
+          {isEditing && (
+            <>
+              {[
+                { label: 'Nopol', name: 'nopol', type: 'text' },
+                { label: 'Driver', name: 'driver', type: 'text' },
+                { label: 'Sumber Barang', name: 'sumber_barang', type: 'text' },
+                { label: 'Nama Barang', name: 'nama_barang', type: 'text' },
+                { label: 'UOM', name: 'uom', type: 'text' },
+                { label: 'Qty', name: 'qty', type: 'number' },
+              ].map(({ label, name, type }) => (
+                <div key={name} className="mb-4">
+                  <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor={name}>
+                    {label}
+                  </label>
+                  <input
+                    id={name}
+                    name={name}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type={type}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              ))}
+              
+              <div className="flex space-x-4">
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Update
+                </button>
                 <button
                   type="button"
-                  className="button is-danger"
+                  className="px-6 py-2 bg-red-500 text-white font-semibold rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                   onClick={handleDelete}
                 >
                   Delete
                 </button>
               </div>
-            </div>
-          </>
-        )}
-      </form>
+            </>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

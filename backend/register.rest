@@ -11,28 +11,17 @@ Content-Type: application/json
 }
 
 ### Test API login
-POST http://localhost:5000/login
+POST https://authv2.lifeforcode.net/login
 Content-Type: application/json
 
 {
 
-    "email": "ajasaja@example.com",
+    "email": "amin@gmail.com",
     "password": "12345678"
    
 }
 ### Test API l
-POST http://localhost:5000/transaksi
+GET  https://authv2.lifeforcode.net/transaksi-keluar
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsIm5hbWUiOiJva2UxMjMiLCJlbWFpbCI6ImFqYXNhamFAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjE0MDgyMjksImV4cCI6MTcyMTQwODI0NH0.R2gZDr6s9CX2Sl9gEg5oz62C4IAPJVvcF9o5Rjm-n7Q"
-
-{
-    "idtransaksi": "2",
-    "tanggal_pickup": "2024-07-20T14:00:00Z",
-    "nopol": "AB123CD",
-    "driver": "John Doe",
-    "sumber_barang": "Supplier A",
-    "nama_barang": "Product X",
-    "uom": "unit",
-    "qty": 100
-}
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE2LCJuYW1lIjoiQW1pbmFoIiwiZW1haWwiOiJhbWluQGdtYWlsLmNvbSIsImlhdCI6MTcyMTQ4NDMyNCwiZXhwIjoxNzIxNDg0MzM5fQ.QIIXeZnH60YtsjttjxQERC2DCoNAQ3PlqKALT15QVYo
 
