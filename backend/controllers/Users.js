@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const getUsers = async (req, res) => {
   try {
     const users = await Users.findAll({
-      attributes: ['id', 'name', 'email']
+      attributes: ['id', 'name', 'email', 'role']
     });
     res.json(users);
   } catch (error) {
@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  const { name, email, password, confPassword } = req.body;
+  const { name, email, password, confPassword, role } = req.body;
 
   if (!name || !email || !password || !confPassword) {
     return res.status(400).json({ msg: "Please enter all fields" });
@@ -38,6 +38,7 @@ const register = async (req, res) => {
     const newUser = await Users.create({
       name,
       email,
+      role,
       password: hashPassword
     });
 
@@ -70,10 +71,11 @@ const login = async (req, res) => {
 
     const userId = user.id;
     const name = user.name;
-    const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+    const role = user.role;
+    const accessToken = jwt.sign({ userId, name, email, role }, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: '15s'
     });
-    const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
+    const refreshToken = jwt.sign({ userId, name, email, role }, process.env.REFRESH_TOKEN_SECRET, {
       expiresIn: '1d'
     });
 
