@@ -226,7 +226,7 @@ const TransaksiKeluar = () => {
                                 {currentItems.length > 0 ? (
                                     currentItems.map((item) => (
                                         <tr key={item.idtransaksikeluar} className="hover:bg-gray-50">
-                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.idtransaksikeluar}</td>
+                                            <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.idtransaksivarchar}</td>
                                             <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{new Date(item.tanggal_pickup).toLocaleDateString()}</td>
                                             <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.nopol}</td>
                                             <td className="p-3 border border-gray-300 text-left truncate max-w-[150px]">{item.driver}</td>

@@ -3,10 +3,14 @@ const db = require('../config/Database.js');
 
 const TransaksiKeluar = db.define('inv_transaksi_keluar', {
   idtransaksikeluar: {
-    type: DataTypes.STRING, // Changed to INTEGER for auto-increment
+    type: DataTypes.INTEGER, 
     primaryKey: true,
-    autoIncrement: true // Automatically increment the ID
   },
+  idtransaksivarchar: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+
   tanggal_pickup: {
     type: DataTypes.DATE,
     allowNull: false,

@@ -7,6 +7,7 @@ import { apiurl } from './api/config';
 function FormTransaksiKeluar() {
   const [formData, setFormData] = useState({
     idtransaksikeluar: '',
+    idtransaksivarchar: '',
     nopol: '',
     driver: '',
     sumber_barang: '',
@@ -19,42 +20,43 @@ function FormTransaksiKeluar() {
   const navigate = useNavigate();
 
   // Fetch a new ID for transaksi
-  const fetchNewId = async () => {
+  const fetchNewId = useCallback(async () => {
     try {
       const response = await axios.get(`${apiurl}/transaksi-keluar/latest-id`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Fetched new transaction ID:', response.data);
-      setFormData((prevData) => ({ ...prevData, idtransaksikeluar: response.data.idtransaksikeluar }));
+      setFormData((prevData) => ({
+        ...prevData,
+        idtransaksikeluar: response.data.idtransaksikeluar,
+        idtransaksivarchar: response.data.idtransaksivarchar
+      }));
     } catch (error) {
       console.error('Error fetching new transaction ID:', error.response ? error.response.data : error.message);
       alert('Failed to fetch new transaction ID: ' + (error.response ? error.response.data.message : error.message));
     }
-  };
+  }, [token]);
 
   // Submit the transaction form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Set current timestamp for tanggal_pickup
+    
     const currentTimestamp = new Date().toISOString();
-
+    
+    const { idtransaksikeluar, ...restData } = formData; // Exclude idtransaksi if not needed
+  
     const dataToSend = {
-      ...formData,
-      tanggal_pickup: currentTimestamp // Add timestamp to data
+      ...restData,
+      tanggal_pickup: currentTimestamp
     };
-
-    console.log('Submitting form with data:', dataToSend);
-
+    
     try {
       const response = await axios.post(`${apiurl}/transaksi-keluar`, dataToSend, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('Create transaction response:', response.data);
-      alert(response.data.message);
-      // Reset form data after successful submission
+      alert(response.data.message || 'Transaction created successfully');
       setFormData({
         idtransaksikeluar: '',
+        idtransaksivarchar: '',
         nopol: '',
         driver: '',
         sumber_barang: '',
@@ -65,14 +67,14 @@ function FormTransaksiKeluar() {
       fetchNewId(); // Fetch a new ID after successful submission
     } catch (error) {
       console.error('Error creating transaction:', error.response ? error.response.data : error.message);
-      alert('Failed to create transaction: ' + (error.response ? error.response.data.message : error.message));
+      alert(`Failed to create transaction: ${error.response ? error.response.data.message : error.message}`);
     }
   };
-
+  
+  
   // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Updating field ${name} with value ${value}`);
     setFormData({ ...formData, [name]: value });
   };
 
@@ -90,35 +92,39 @@ function FormTransaksiKeluar() {
   }, [navigate]);
 
   // Token expiration handling
-  const axiosJWT = axios.create();
-
-  axiosJWT.interceptors.request.use(async (config) => {
-    const currentDate = new Date();
-    if (expire * 1000 < currentDate.getTime()) {
-      try {
-        const response = await axios.get(`${apiurl}/token`);
-        config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-        setToken(response.data.accessToken);
-        const decoded = jwtDecode(response.data.accessToken);
-        setExpire(decoded.exp);
-      } catch (error) {
-        console.error('Error refreshing token in interceptor:', error);
-        navigate("/"); // Redirect if token refresh fails
-      }
-    } else {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  }, (error) => {
-    return Promise.reject(error);
-  });
-
   useEffect(() => {
-    refreshToken(); // Refresh token on component mount
-    if (token) {
-      fetchNewId(); // Fetch new ID when the token is available
-    }
-  }, [refreshToken, token]);
+    const axiosJWT = axios.create();
+
+    axiosJWT.interceptors.request.use(async (config) => {
+      const currentDate = new Date();
+      if (expire * 1000 < currentDate.getTime()) {
+        try {
+          const response = await axios.get(`${apiurl}/token`);
+          config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+          setToken(response.data.accessToken);
+          const decoded = jwtDecode(response.data.accessToken);
+          setExpire(decoded.exp);
+        } catch (error) {
+          console.error('Error refreshing token in interceptor:', error);
+          navigate("/"); // Redirect if token refresh fails
+        }
+      } else {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    }, (error) => {
+      return Promise.reject(error);
+    });
+
+    // Refresh token and fetch new ID on component mount
+    const initialize = async () => {
+      await refreshToken();
+      if (token) {
+        fetchNewId();
+      }
+    };
+    initialize();
+  }, [expire, token, navigate, refreshToken, fetchNewId]);
 
   return (
     <div className="container mx-auto p-4">
@@ -129,10 +135,10 @@ function FormTransaksiKeluar() {
           <input
             className="p-2 border rounded"
             type="text"
-            name="idtransaksikeluar"
-            value={formData.idtransaksikeluar}
+            name="idtransaksivarchar"
+            value={formData.idtransaksivarchar}
             onChange={handleChange}
-            placeholder="Enter transaction ID"
+            placeholder="ID Transaksi akan otomatis terisi"
             readOnly
             required
           />

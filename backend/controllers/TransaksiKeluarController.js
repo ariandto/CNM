@@ -2,6 +2,7 @@ const TransaksiKeluar = require('../models/TransaksiKeluar.js');
 const moment = require('moment'); // Menggunakan moment.js untuk format tanggal
 const { Op } = require('sequelize'); // Import Op from Sequelize
 
+// Mengambil semua transaksi keluar
 const getAllTransaksiKeluar = async (req, res) => {
   try {
     const transaksi = await TransaksiKeluar.findAll();
@@ -12,6 +13,7 @@ const getAllTransaksiKeluar = async (req, res) => {
   }
 };
 
+// Menghasilkan ID transaksi keluar baru
 const generateNewTransaksiIdKeluar = async () => {
   try {
     const today = moment().format('DDMMYY');
@@ -19,18 +21,18 @@ const generateNewTransaksiIdKeluar = async () => {
 
     const lastTransaksi = await TransaksiKeluar.findOne({
       where: {
-        idtransaksikeluar: {
+        idtransaksivarchar: {
           [Op.like]: `${prefix}%`
         }
       },
-      order: [['idtransaksikeluar', 'DESC']]
+      order: [['idtransaksivarchar', 'DESC']]
     });
 
     if (!lastTransaksi) {
       return `${prefix}0001`; // Default ID jika tidak ada data sebelumnya
     }
 
-    const lastId = lastTransaksi.idtransaksikeluar;
+    const lastId = lastTransaksi.idtransaksivarchar;
     const lastNumber = parseInt(lastId.slice(-4));
     const newNumber = (lastNumber + 1).toString().padStart(4, '0');
 
@@ -41,19 +43,20 @@ const generateNewTransaksiIdKeluar = async () => {
   }
 };
 
+// Membuat transaksi keluar baru
 const createTransaksiKeluar = async (req, res) => {
   const { tanggal_pickup, nopol, driver, sumber_barang, nama_barang, uom, qty } = req.body;
 
-  // Basic validation
+  // Validasi dasar
   if (!tanggal_pickup || !nopol || !driver || !sumber_barang || !nama_barang || !uom || !qty) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
-    const idtransaksikeluar = await generateNewTransaksiIdKeluar();
+    const idtransaksivarchar = await generateNewTransaksiIdKeluar();
 
     const newTransaksi = await TransaksiKeluar.create({
-      idtransaksikeluar,
+      idtransaksivarchar,
       tanggal_pickup,
       nopol,
       driver,
@@ -70,20 +73,22 @@ const createTransaksiKeluar = async (req, res) => {
   }
 };
 
+// Mengambil ID transaksi keluar terbaru
 const getLatestTransaksiIdKeluar = async (req, res) => {
   try {
     const newId = await generateNewTransaksiIdKeluar();
-    res.status(200).json({ idtransaksikeluar: newId });
+    res.status(200).json({ idtransaksivarchar: newId });
   } catch (error) {
     console.error("Error fetching latest transaction ID:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
+// Mengambil transaksi keluar berdasarkan ID
 const getTransaksiKeluarById = async (req, res) => {
   try {
     const transaksi = await TransaksiKeluar.findOne({
-      where: { idtransaksikeluar: req.params.id }
+      where: { idtransaksivarchar: req.params.id }
     });
     if (transaksi) {
       res.status(200).json(transaksi);
@@ -96,10 +101,11 @@ const getTransaksiKeluarById = async (req, res) => {
   }
 };
 
+// Memperbarui transaksi keluar berdasarkan ID
 const updateTransaksiKeluar = async (req, res) => {
   const { tanggal_pickup, nopol, driver, sumber_barang, nama_barang, uom, qty } = req.body;
 
-  // Basic validation
+  // Validasi dasar
   if (!tanggal_pickup || !nopol || !driver || !sumber_barang || !nama_barang || !uom || !qty) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -114,11 +120,11 @@ const updateTransaksiKeluar = async (req, res) => {
       uom,
       qty
     }, {
-      where: { idtransaksikeluar: req.params.id }
+      where: { idtransaksivarchar: req.params.id }
     });
 
     if (updated) {
-      const updatedTransaksi = await TransaksiKeluar.findOne({ where: { idtransaksikeluar: req.params.id } });
+      const updatedTransaksi = await TransaksiKeluar.findOne({ where: { idtransaksivarchar: req.params.id } });
       res.status(200).json(updatedTransaksi);
     } else {
       res.status(404).json({ message: 'Transaksi Keluar not found' });
@@ -129,10 +135,11 @@ const updateTransaksiKeluar = async (req, res) => {
   }
 };
 
+// Menghapus transaksi keluar berdasarkan ID
 const deleteTransaksiKeluar = async (req, res) => {
   try {
     const deleted = await TransaksiKeluar.destroy({
-      where: { idtransaksikeluar: req.params.id }
+      where: { idtransaksivarchar: req.params.id }
     });
 
     if (deleted) {
