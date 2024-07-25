@@ -34,7 +34,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
                         <a  onClick={() => navigate('/home')}className="flex-shrink-0">
-                            <img src="cnm.png" alt="logo" className="h-8 w-auto" />
+                            <img src="cnm.png" alt="logo" className="h-16 w-16" />
                         </a>
                         <div className="hidden md:flex space-x-4 ml-10">
                             <a
@@ -176,7 +176,7 @@ const Navbar = () => {
                                     aria-haspopup="true"
                                     onClick={() => handleDropdownClick('settings')}
                                 >
-                                    Settings
+                                    Profile
                                     <svg
                                         className="-mr-1 h-5 w-5 text-gray-400"
                                         viewBox="0 0 20 20"
@@ -200,12 +200,12 @@ const Navbar = () => {
                                     >
                                         <div className="py-1" role="none">
                                             <a
-                                                onClick={() => navigate('/userlist')}
+                                                onClick={() => navigate('/about')}
                                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                                                 role="menuitem"
                                                 tabIndex="-1"
                                             >
-                                                List User
+                                                About
                                             </a>
                                             <button
                                                 onClick={Logout}

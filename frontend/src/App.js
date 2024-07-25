@@ -10,6 +10,7 @@ import EditDeleteTransaksi from "./components/EditDeleteTransaksi.js";
 import TransaksiKeluar from "./components/TransaksiKeluar.js";
 import FormTransaksiKeluar from "./components/FormTransaksiKeluar.js";
 import EditDeleteTransaksiKeluar from "./components/EditDeleteTransaksiKeluar.js";
+import About from "./components/About.js";
 
 
 function App() {
@@ -26,8 +27,18 @@ function App() {
         <Route path="/editbarangmasuk" element={<EditBarangMasukWithNavbar />} />
         <Route path="/editbarangkeluar" element={<EditBarangKeluarWithNavbar />} />
         <Route path="/formbarangkeluar" element={<FormBarangInputKeluarWithNavbar />} />
+        <Route path="/about" element={<AboutWithNavbar />} />
       </Routes>
     </Router>
+  );
+}
+
+function AboutWithNavbar() {
+  return (
+    <>
+      <Navbar />
+      <About />
+    </>
   );
 }
 

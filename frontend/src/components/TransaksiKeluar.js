@@ -17,7 +17,7 @@ const TransaksiKeluar = () => {
     const [searchDate, setSearchDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
     const navigate = useNavigate();
 
     const axiosJWT = axios.create();
