@@ -2,6 +2,7 @@ const Users = require('../models/UserModel.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// Fetch all users
 const getUsers = async (req, res) => {
   try {
     const users = await Users.findAll({
@@ -14,6 +15,7 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Register new user
 const register = async (req, res) => {
   const { name, email, password, confPassword, role } = req.body;
 
@@ -49,6 +51,7 @@ const register = async (req, res) => {
   }
 };
 
+// User login
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -72,8 +75,9 @@ const login = async (req, res) => {
     const userId = user.id;
     const name = user.name;
     const role = user.role;
+    console.log("User role:", role); // Tambahkan log ini
     const accessToken = jwt.sign({ userId, name, email, role }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: '15s'
+      expiresIn: '5m'
     });
     const refreshToken = jwt.sign({ userId, name, email, role }, process.env.REFRESH_TOKEN_SECRET, {
       expiresIn: '1d'
@@ -95,6 +99,7 @@ const login = async (req, res) => {
   }
 };
 
+// User logout
 const logout = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 

@@ -7,7 +7,7 @@ import { apiurl } from './api/config';
 const Home = () => {
   const [token, setToken] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState(''); // Initialize role state
+  const [role, setRole] = useState('');
   const [expire, setExpire] = useState('');
   const [transaksiMasuk, setTransaksiMasuk] = useState([]);
   const [transaksiKeluar, setTransaksiKeluar] = useState([]);
@@ -22,9 +22,8 @@ const Home = () => {
       setToken(newToken);
       const decoded = jwtDecode(newToken);
       setName(decoded.name);
-      setRole(decoded.role); // Set the role from the decoded token
+      setRole(decoded.role);
       setExpire(decoded.exp);
-      localStorage.setItem('token', newToken);
     } catch (error) {
       console.error('Error refreshing token:', error);
       navigate('/');
@@ -84,7 +83,6 @@ const Home = () => {
     }
   }, [expire, refreshToken]);
 
-  // Count unique sources and total quantity
   const countUniqueSourcesMasuk = new Set(transaksiMasuk.map(item => item.sumber_barang)).size;
   const countUniqueSourcesKeluar = new Set(transaksiKeluar.map(item => item.sumber_barang)).size;
 
@@ -100,7 +98,6 @@ const Home = () => {
         <p className="text-center text-red-500">{error}</p>
       ) : (
         <>
-          {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
               <h2 className="text-lg font-semibold">Supplier of Incoming</h2>
@@ -124,7 +121,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Comparison Boxes */}
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">Comparison of Transactions</h2>
             <div className="flex flex-col md:flex-row gap-4">
@@ -143,7 +139,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Comparison Chart */}
           <div className="mt-8">
             <h2 className="text-xl font-bold mb-4">Transaction Comparison Chart</h2>
             <div className="flex flex-col md:flex-row gap-4">

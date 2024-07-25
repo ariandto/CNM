@@ -29,7 +29,7 @@ const generateNewTransaksiIdKeluar = async () => {
     });
 
     if (!lastTransaksi) {
-      return `${prefix}0001`; // Default ID jika tidak ada data sebelumnya
+      return `${prefix}0000`; // Default ID jika tidak ada data sebelumnya
     }
 
     const lastId = lastTransaksi.idtransaksivarchar;

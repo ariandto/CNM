@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import jwtDecode from 'jwt-decode';
 import { apiurl } from './api/config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
+    const [role, setRole] = useState(''); // New state to store the user role
     const navigate = useNavigate();
 
     const Auth = async (e) => {
@@ -18,6 +19,18 @@ const Login = () => {
                 password: password
             });
             console.log('Response:', response.data);
+
+            // Simpan token di localStorage
+            const accessToken = response.data.accessToken;
+            localStorage.setItem('accessToken', accessToken);
+
+            // Decode token untuk mendapatkan peran pengguna
+            const decodedToken = jwtDecode(accessToken);
+            const userRole = decodedToken.role;
+            localStorage.setItem('role', userRole);
+            setRole(userRole); // Set the role in the state
+            console.log('User role:', userRole);
+
             navigate("/home");
         } catch (error) {
             if (error.response) {
@@ -37,6 +50,7 @@ const Login = () => {
                     <div className="text-center mb-6">
                         <img src="cnm.png" alt="logo" className="w-24 h-24 mx-auto mb-4" />
                         <p className="text-red-500">{msg}</p>
+                        {role && <p className="text-green-500">Role: {role}</p>} {/* Display the user role */}
                     </div>
                     <form onSubmit={Auth}>
                         <div className="mb-4">
