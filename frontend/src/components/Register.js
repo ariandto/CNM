@@ -8,9 +8,10 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confPassword, setConfPassword] = useState('');
+    const [role, setRole] = useState('Staff'); // Default role
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
- 
+
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
@@ -18,7 +19,8 @@ const Register = () => {
                 name: name,
                 email: email,
                 password: password,
-                confPassword: confPassword
+                confPassword: confPassword,
+                role: role
             });
             navigate("/");
         } catch (error) {
@@ -27,7 +29,7 @@ const Register = () => {
             }
         }
     };
- 
+
     return (
         <section className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
@@ -85,6 +87,21 @@ const Register = () => {
                             value={confPassword}
                             onChange={(e) => setConfPassword(e.target.value)}
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="role">
+                            Role
+                        </label>
+                        <select
+                            id="role"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                        >
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Staff">Staff</option>
+                        </select>
                     </div>
                     <div>
                         <button

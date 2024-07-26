@@ -11,6 +11,7 @@ import TransaksiKeluar from "./components/TransaksiKeluar.js";
 import FormTransaksiKeluar from "./components/FormTransaksiKeluar.js";
 import EditDeleteTransaksiKeluar from "./components/EditDeleteTransaksiKeluar.js";
 import About from "./components/About.js";
+import Unauthorized from "./components/Unauthorized.js";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/userlist" element={<ListUserWithNavbar />} />
         <Route path="/home" element={<HomeWithNavbar />} />
         <Route path="/listbarangmasuk" element={<TransaksiMasukWithNavbar />} />
@@ -28,10 +30,19 @@ function App() {
         <Route path="/editbarangkeluar" element={<EditBarangKeluarWithNavbar />} />
         <Route path="/formbarangkeluar" element={<FormBarangInputKeluarWithNavbar />} />
         <Route path="/about" element={<AboutWithNavbar />} />
+        
+
+
+
       </Routes>
     </Router>
   );
 }
+
+
+
+//end of staff navbar
+
 
 function AboutWithNavbar() {
   return (

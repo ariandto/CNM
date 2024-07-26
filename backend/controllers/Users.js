@@ -75,7 +75,7 @@ const login = async (req, res) => {
     const userId = user.id;
     const name = user.name;
     const role = user.role;
-    console.log("User role:", role); // Tambahkan log ini
+    //console.log("User role:", role); // Tambahkan log ini
     const accessToken = jwt.sign({ userId, name, email, role }, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: '5m'
     });

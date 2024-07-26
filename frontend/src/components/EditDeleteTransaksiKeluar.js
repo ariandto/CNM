@@ -56,7 +56,7 @@ function EditDeleteTransaksiKeluar() {
       const response = await axios.get(`${apiurl}/transaksi-keluar/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('API Response:', response.data); // Debug log
+      //console.log('API Response:', response.data); // Debug log
       if (response.data && response.data.idtransaksivarchar) {
         setFormData(response.data);
         setIsEditing(true);

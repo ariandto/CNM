@@ -8,7 +8,6 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
-    const [role, setRole] = useState(''); // New state to store the user role
     const navigate = useNavigate();
 
     const Auth = async (e) => {
@@ -18,26 +17,18 @@ const Login = () => {
                 email: email,
                 password: password
             });
-            console.log('Response:', response.data);
 
-            // Simpan token di localStorage
             const accessToken = response.data.accessToken;
-            localStorage.setItem('accessToken', accessToken);
 
-            // Decode token untuk mendapatkan peran pengguna
-            const decodedToken = jwtDecode(accessToken);
-            const userRole = decodedToken.role;
-            localStorage.setItem('role', userRole);
-            setRole(userRole); // Set the role in the state
-            console.log('User role:', userRole);
+            // Decode token to get the user's role (if needed for other purposes)
+            jwtDecode(accessToken);
 
+            // Redirect to home page after successful login
             navigate("/home");
         } catch (error) {
             if (error.response) {
-                console.error('Error response:', error.response);
                 setMsg(error.response.data.msg);
             } else {
-                console.error('Error message:', error.message);
                 setMsg('An unexpected error occurred. Please try again.');
             }
         }
@@ -50,7 +41,6 @@ const Login = () => {
                     <div className="text-center mb-6">
                         <img src="cnm.png" alt="logo" className="w-24 h-24 mx-auto mb-4" />
                         <p className="text-red-500">{msg}</p>
-                        {role && <p className="text-green-500">Role: {role}</p>} {/* Display the user role */}
                     </div>
                     <form onSubmit={Auth}>
                         <div className="mb-4">

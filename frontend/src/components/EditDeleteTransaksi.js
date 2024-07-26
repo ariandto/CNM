@@ -52,11 +52,11 @@ function EditDeleteTransaksi() {
     }
     try {
       setLoading(true);
-      console.log(`Fetching transaction with ID: ${id}`); // Debug log
+      //console.log(`Fetching transaction with ID: ${id}`); // Debug log
       const response = await axios.get(`${apiurl}/transaksi/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('API Response:', response.data); // Debug log
+      //console.log('API Response:', response.data); // Debug log
       if (response.data && response.data.idtransaksivarchar) {
         setFormData(response.data);
         setIsEditing(true);

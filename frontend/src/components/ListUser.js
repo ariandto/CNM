@@ -53,7 +53,7 @@ const ListUser = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log('Users:', response.data); // Log the response data
+            //console.log('Users:', response.data); // Log the response data
             setUsers(response.data);
         } catch (error) {
             console.error(error);
